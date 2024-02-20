@@ -1,30 +1,25 @@
 package com.cinemania.service;
 
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
-import com.cinemania.model.AllTimePopularMovies;
-import com.cinemania.model.PopularInTheatreMovies;
-import com.cinemania.model.TrendingMovies;
 import com.cinemania.request.MoviesRequest;
-import com.cinemania.response.MovieReviewResponse;
-import com.cinemania.response.MoviesResponse;
 
 public interface AdminService {
 
-	TrendingMovies addTrendingMovies(MoviesRequest moviesRequest);
+	ResponseEntity<?> addTrendingMovies(MoviesRequest moviesRequest);
 
-	PopularInTheatreMovies addPopularTheatreMovies(MoviesRequest moviesRequest);
+	ResponseEntity<?> addPopularTheatreMovies(MoviesRequest moviesRequest);
 
-	AllTimePopularMovies addAllTimePopularMovies(MoviesRequest moviesRequest);
+	ResponseEntity<?> addAllTimePopularMovies(MoviesRequest moviesRequest);
 
-	MoviesResponse getMovieByName(String movieName);
+	ResponseEntity<?> getMovieByName(String movieName);
 
-	List<TrendingMovies> getAllTrendingMovies();
+	ResponseEntity<?> getAllTrendingMovies();
 
-	List<PopularInTheatreMovies> getAllPopularInTheatreMovies();
+	ResponseEntity<?> getAllPopularInTheatreMovies();
 
-	List<AllTimePopularMovies> getAllTimePopularMovies();
+	ResponseEntity<?> getAllTimePopularMovies();
 
-	List<MovieReviewResponse> getMoviesReviewByMovieId(String movieName);
+	ResponseEntity<?> getMoviesReviewByMovieId(String movieName);
 
 }

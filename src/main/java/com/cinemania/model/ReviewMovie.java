@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-public class MovieReviewTest1 {
+public class ReviewMovie {
 	@Id
 	@SequenceGenerator(name = "RatingMovies_sequence", sequenceName = "RatingMovies_sequence", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RatingMovies_sequence")
 	private Long movieReviewId;
-	private Long userId;
+	private String userEmail;
 	private String movieName;
 	private int rating;
 	private String review;

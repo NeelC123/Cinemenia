@@ -20,6 +20,6 @@ public class TrendingMovies {
 	private Long movieId;
 	private String movieName;
 	private String movieImgUrl;
-	private int movieRating;
+	private float movieRating;
 
 }

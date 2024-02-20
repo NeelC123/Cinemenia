@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cinemania.exception.CinemaniaExceptionNotFound;
 import com.cinemania.model.AllTimePopularMovies;
 import com.cinemania.model.CinemaniaUser;
-import com.cinemania.model.MovieReviewTest1;
 import com.cinemania.model.PopularInTheatreMovies;
+import com.cinemania.model.ReviewMovie;
 import com.cinemania.model.TrendingMovies;
 import com.cinemania.repository.AllTimePopularMoviesRepo;
 import com.cinemania.repository.MovieReviewRepo;
@@ -41,175 +43,122 @@ public class AdminServiceImpl implements AdminService {
 	UserRepository repository;
 
 	@Override
-	public TrendingMovies addTrendingMovies(MoviesRequest moviesRequest) {
+	public ResponseEntity<?> addTrendingMovies(MoviesRequest moviesRequest) {
 
 		if (trendingMoviesRepo.findByMovieNameAndMovieImgUrl(moviesRequest.getMovieName(),
 				moviesRequest.getMovieImgUrl()) == null)
-			return trendingMoviesRepo.save(movieUtil.getTrendingObject(moviesRequest));
-		else
-			return null;
+			return ResponseEntity.ok(trendingMoviesRepo.save(movieUtil.getTrendingObject(moviesRequest)));
+		else {
+			return ResponseEntity.ok("Already Exist");
+		}
 	}
 
 	@Override
-	public PopularInTheatreMovies addPopularTheatreMovies(MoviesRequest moviesRequest) {
+	public ResponseEntity<?> addPopularTheatreMovies(MoviesRequest moviesRequest) {
 		if (popularInTheatreMoviesRepo.findByMovieNameAndMovieImgUrl(moviesRequest.getMovieName(),
 				moviesRequest.getMovieImgUrl()) == null)
-			return popularInTheatreMoviesRepo.save(movieUtil.getPopularInTheatreMoviesObject(moviesRequest));
+			return ResponseEntity
+					.ok(popularInTheatreMoviesRepo.save(movieUtil.getPopularInTheatreMoviesObject(moviesRequest)));
 		else
-			return null;
+			return ResponseEntity.ok("Already Exist");
 	}
 
 	@Override
-	public AllTimePopularMovies addAllTimePopularMovies(MoviesRequest moviesRequest) {
+	public ResponseEntity<?> addAllTimePopularMovies(MoviesRequest moviesRequest) {
 		if (trendingMoviesRepo.findByMovieNameAndMovieImgUrl(moviesRequest.getMovieName(),
 				moviesRequest.getMovieImgUrl()) == null)
-			return allTimePopularMoviesRepo.save(movieUtil.getAllTimePopularMoviesObject(moviesRequest));
-		return null;
+			return ResponseEntity
+					.ok(allTimePopularMoviesRepo.save(movieUtil.getAllTimePopularMoviesObject(moviesRequest)));
+		return ResponseEntity.ok("Already Exist");
 	}
 
 	@Override
-	public MoviesResponse getMovieByName(String movieName) {
+	public ResponseEntity<?> getMovieByName(String movieName) {
 		MoviesResponse moviesResponse = new MoviesResponse();
 
 //		AllTimePopular
 		if (allTimePopularMoviesRepo.findByMovieName(movieName) != null) {
-			System.out.println("all");
 			AllTimePopularMovies allTimePopularMovies = allTimePopularMoviesRepo.findByMovieName(movieName);
 			moviesResponse.setMovieName(allTimePopularMovies.getMovieName());
 			moviesResponse.setMovieImgUrl(allTimePopularMovies.getMovieImgUrl());
 //			moviesResponse.setMovieRating(allTimePopularMovies.getMovieRating());
-			return moviesResponse;
+			return ResponseEntity.ok(moviesResponse);
 		}
 //		Trending Movies
 		else if (trendingMoviesRepo.findByMovieName(movieName) != null) {
-			System.out.println("Trend");
 			TrendingMovies trendingMovies = trendingMoviesRepo.findByMovieName(movieName);
 			moviesResponse.setMovieName(trendingMovies.getMovieName());
 			moviesResponse.setMovieImgUrl(trendingMovies.getMovieImgUrl());
 			moviesResponse.setMovieType("TrendingMovies");
 
 //			moviesResponse.setMovieRating(trendingMovies.getMovieRating());
-			return moviesResponse;
+			return ResponseEntity.ok(moviesResponse);
 		}
 //		Popular In Theaters 
 		else if (popularInTheatreMoviesRepo.findByMovieName(movieName) != null) {
-			System.out.println("popular");
 			PopularInTheatreMovies popularInTheatreMovies = popularInTheatreMoviesRepo.findByMovieName(movieName);
 			moviesResponse.setMovieName(popularInTheatreMovies.getMovieName());
 			moviesResponse.setMovieImgUrl(popularInTheatreMovies.getMovieImgUrl());
 			moviesResponse.setMovieType("PopularInTheatreMovies");
 //			moviesResponse.setMovieRating(popularInTheatreMovies.getMovieRating());
-			return moviesResponse;
+			return ResponseEntity.ok(moviesResponse);
+		} else {
+			throw new CinemaniaExceptionNotFound("Movie Not Found");
 		}
-		return null;
+//		return ResponseEntity.ok("Not Existed");
 	}
 
 	@Override
-	public List<TrendingMovies> getAllTrendingMovies() {
+	public ResponseEntity<?> getAllTrendingMovies() {
+		if (trendingMoviesRepo.findAll() == null) {
+			return ResponseEntity.ok("No Movies Found");
+		}
 		List<TrendingMovies> list = trendingMoviesRepo.findAll();
-		List<MovieReviewTest1> movieReview = ratingRepo.findAll();
-		for (TrendingMovies newList : list) {
-			Long count = 0l;
-			int rating = 0;
 
-			for (MovieReviewTest1 mreview : movieReview) {
-				if (mreview.getMovieName().equals(newList.getMovieName())) {
-					count++;
-					rating +=mreview.getRating();
-				}
-			}
-			try {
-				int average = (int) (rating / count);
-				newList.setMovieRating(average);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			trendingMoviesRepo.save(newList);
-		}
-		return list;
+		return ResponseEntity.ok(list);
 
 	}
 
 	@Override
-	public List<PopularInTheatreMovies> getAllPopularInTheatreMovies() {
+	public ResponseEntity<?> getAllPopularInTheatreMovies() {
+		if (popularInTheatreMoviesRepo.findAll() == null) {
+			return ResponseEntity.ok("No Movies Found");
+		}
 		List<PopularInTheatreMovies> list = popularInTheatreMoviesRepo.findAll();
-		List<MovieReviewTest1> movieReview = ratingRepo.findAll();
-		for (PopularInTheatreMovies newList : list) {
-			Long count = 0l;
-			int rating = 0;
 
-			for (MovieReviewTest1 mreview : movieReview) {
-				if (mreview.getMovieName().equals(newList.getMovieName())) {
-					count++;
-					rating += mreview.getRating();
-				}
-			}
-			int average;
-			try {
-				average = (int) (rating / count);
-				newList.setMovieRating(average);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				System.out.println(e.getMessage());
-			}
-		
-			popularInTheatreMoviesRepo.save(newList);
-		}
-		return list;
+		return ResponseEntity.ok(list);
 	}
 
 	@Override
-	public List<AllTimePopularMovies> getAllTimePopularMovies() {
-
+	public ResponseEntity<?> getAllTimePopularMovies() {
+		if (allTimePopularMoviesRepo.findAll() == null) {
+			return ResponseEntity.ok("No Movies Found");
+		}
 		List<AllTimePopularMovies> list = allTimePopularMoviesRepo.findAll();
-		List<MovieReviewTest1> movieReview = ratingRepo.findAll();
-		for (AllTimePopularMovies newList : list) {
-			Long count=0l;
-			int rating = 0;
-			for (MovieReviewTest1 mreview : movieReview) {
-			
-				if (mreview.getMovieName().equalsIgnoreCase(newList.getMovieName())) {
-					System.out.println();
-				  count++;	
-					rating += mreview.getRating();
-				}
-				
-				
-			}
-			
-			try {
-				int average = (int) (rating / count);
-				newList.setMovieRating(average);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			allTimePopularMoviesRepo.save(newList);
-		}
-		return list;
+
+		return ResponseEntity.ok(list);
 
 	}
 
 	@Override
-	public List<MovieReviewResponse> getMoviesReviewByMovieId(String movieName) {
-		List<MovieReviewTest1> list = ratingRepo.findAll();
-		List<MovieReviewTest1> listOfMovieById = new ArrayList<>();
-		for (MovieReviewTest1 review : list) {
+	public ResponseEntity<?> getMoviesReviewByMovieId(String movieName) {
+		List<ReviewMovie> list = ratingRepo.findAll();
+		List<ReviewMovie> listOfMovieById = new ArrayList<>();
+		for (ReviewMovie review : list) {
 			if (review.getMovieName().equals(movieName))
 				listOfMovieById.add(review);
 		}
 		List<MovieReviewResponse> result = new ArrayList<>();
-		for (MovieReviewTest1 res : listOfMovieById) {
+		for (ReviewMovie res : listOfMovieById) {
 			MovieReviewResponse movieReviewResponse = new MovieReviewResponse();
-			CinemaniaUser cinemaniaUser = repository.findById(res.getUserId()).get();
+			CinemaniaUser cinemaniaUser = repository.findByUserEmail(res.getUserEmail());
 			movieReviewResponse.setAuthor(cinemaniaUser.getUserName());
 			movieReviewResponse.setPublishedOn(res.getLocalDate());
 			movieReviewResponse.setRating(res.getRating());
 			movieReviewResponse.setReview(res.getReview());
 			result.add(movieReviewResponse);
 		}
-		return result;
+		return ResponseEntity.ok(result);
 	}
 
 }

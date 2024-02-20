@@ -1,25 +1,24 @@
 package com.cinemania.service;
 
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
-import com.cinemania.model.CinemaniaUser;
-import com.cinemania.model.MovieReviewTest1;
+import com.cinemania.model.ReviewMovie;
 import com.cinemania.request.UserRequest;
 
 public interface UserService {
 
-	CinemaniaUser addUser(UserRequest request);
+	ResponseEntity<?> addUser(UserRequest request);
 
-	List<CinemaniaUser> getAllUsers();
+	ResponseEntity<?> getAllUsers();
 
-	CinemaniaUser getUserByEmail(String email);
+	ResponseEntity<?> getUserByEmail(String email);
 
-	CinemaniaUser validateUser(String email, String password);
+	ResponseEntity<?> validateUser(String email, String password);
 
-	CinemaniaUser updateUser(UserRequest cinemaniaUser);
+	ResponseEntity<?> updateUser(UserRequest cinemaniaUser);
 
-	String deleteUser(String email);
+	ResponseEntity<?> deleteUser(String email);
 
-	MovieReviewTest1 addReview(MovieReviewTest1 addReview);
+	ResponseEntity<?> addReview(ReviewMovie addReview);
 
 }

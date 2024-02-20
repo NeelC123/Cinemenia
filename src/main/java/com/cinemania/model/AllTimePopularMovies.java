@@ -20,7 +20,7 @@ public class AllTimePopularMovies {
 	private Long movieId;
 	private String movieName;
 	private String movieImgUrl;
-	private int movieRating;
+	private float movieRating;
 	
 	
 	
